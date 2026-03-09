@@ -1,7 +1,6 @@
 package com.addressbook.service;
 
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,5 +55,25 @@ public class AddressBookService {
         }
 
         return null;
+    }
+    
+    // Delete Contact
+    public String deleteContact(int id) {
+
+        Contact contactToDelete = null;
+
+        for (Contact contact : contactList) {
+            if (contact.getId() == id) {
+                contactToDelete = contact;
+                break;
+            }
+        }
+
+        if (contactToDelete != null) {
+            contactList.remove(contactToDelete);
+            return "Contact deleted successfully";
+        }
+
+        return "Contact not found";
     }
 }
