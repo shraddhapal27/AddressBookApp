@@ -3,17 +3,17 @@
 
 A **Spring Boot REST API** application for managing contacts in an Address Book.
 
-This project follows a **Git Feature Branch Workflow**, where each **Use Case (UC)** is implemented in a separate branch and later merged into the `dev` branch.
+The project follows a **Git Feature Branch Workflow**, where each **Use Case (UC)** is implemented in a separate branch and later merged into the `dev` branch.
 
 ---
 
-# 🚀 UC18 – Retrieve Contacts by Date Range
+# 🚀 UC22 – Read Entries from JSON Server
 
-This branch introduces functionality to **retrieve contacts added within a specific date range from the MySQL database**.
+This branch introduces functionality to **retrieve contact entries from a JSON Server**.
 
-The application now supports querying contacts based on the date they were added using **SQL date filtering**.
+JSON Server is used as a **mock REST API** that simulates a backend database. The Spring Boot application communicates with this external API using **RestTemplate** and retrieves contact data.
 
-This feature is implemented using **JDBC and SQL `BETWEEN` operator**.
+This demonstrates **integration with an external REST service**.
 
 ---
 
@@ -23,8 +23,8 @@ This feature is implemented using **JDBC and SQL `BETWEEN` operator**.
 - 🌱 Spring Boot  
 - 📦 Maven  
 - 🔗 REST API  
-- 🐬 MySQL Database  
-- 🔌 JDBC  
+- 📡 JSON Server  
+- 🔌 RestTemplate  
 
 ---
 
@@ -37,10 +37,7 @@ AddressBookApp
 │      AddressBookController.java
 │
 ├── service
-│      AddressBookService.java
-│
-├── db
-│      AddressBookDBService.java
+│      JSONServerService.java
 │
 ├── model
 │      Contact.java
@@ -51,63 +48,87 @@ AddressBookApp
 
 ---
 
-# 🗄 Database Update
+# 🌐 JSON Server Setup
 
-A new column was added to the contacts table to track when a contact was added.
+JSON Server provides a fake REST API for testing.
 
-```
-date_added DATE
-```
-
-SQL used:
+### Install JSON Server
 
 ```
-ALTER TABLE contacts
-ADD date_added DATE;
+npm install -g json-server
 ```
-
-Example table structure:
-
-| id | first_name | last_name | city | state | date_added |
-|----|-----------|-----------|------|------|-----------|
-| 1 | Bhumi | Shrivas | Bhopal | MP | 2026-03-09 |
-| 2 | Rahul | Sharma | Delhi | Delhi | 2026-03-08 |
 
 ---
 
-# 🧠 SQL Query Used
+### Create JSON Data File
+
+Create a file named:
 
 ```
-SELECT * FROM contacts
-WHERE date_added BETWEEN ? AND ?;
+db.json
 ```
 
-PreparedStatement is used to safely bind the start and end dates.
+Example content:
+
+```
+{
+  "contacts": [
+    {
+      "id": 1,
+      "firstName": "Rahul",
+      "lastName": "Sharma",
+      "city": "Delhi"
+    },
+    {
+      "id": 2,
+      "firstName": "Bhumi",
+      "lastName": "Shrivas",
+      "city": "Bhopal"
+    }
+  ]
+}
+```
+
+---
+
+### Start JSON Server
+
+```
+json-server --watch db.json --port 3000
+```
+
+Server URL:
+
+```
+http://localhost:3000/contacts
+```
+
+---
+
+# 🧠 Implementation
+
+The application fetches contact data from JSON Server using **RestTemplate**.
+
+Example logic:
+
+```
+RestTemplate restTemplate = new RestTemplate();
+Contact[] contacts = restTemplate.getForObject(JSON_SERVER_URL, Contact[].class);
+```
+
+The response is converted into a list of Contact objects.
 
 ---
 
 # 🌐 API Endpoint
 
-### Retrieve Contacts by Date Range
+### Retrieve Contacts from JSON Server
 
 ```
-GET /contacts/db/date-range
+GET /contacts/jsonserver
 ```
 
-Parameters:
-
-| Parameter | Description |
-|----------|-------------|
-| startDate | Start date for filtering |
-| endDate | End date for filtering |
-
----
-
-# 📥 Example Request
-
-```
-GET /contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10
-```
+This endpoint retrieves all contacts from the external JSON Server.
 
 ---
 
@@ -116,11 +137,16 @@ GET /contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10
 ```
 [
  {
-  "id":1,
-  "firstName":"Bhumi",
-  "lastName":"Shrivas",
-  "city":"Bhopal",
-  "state":"MP"
+  "id": 1,
+  "firstName": "Rahul",
+  "lastName": "Sharma",
+  "city": "Delhi"
+ },
+ {
+  "id": 2,
+  "firstName": "Bhumi",
+  "lastName": "Shrivas",
+  "city": "Bhopal"
  }
 ]
 ```
@@ -130,7 +156,7 @@ GET /contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10
 # 🧪 Testing Using CURL
 
 ```
-curl "http://localhost:8080/contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10"
+curl http://localhost:8080/contacts/jsonserver
 ```
 
 ---
@@ -138,7 +164,7 @@ curl "http://localhost:8080/contacts/db/date-range?startDate=2026-03-01&endDate=
 # 🌿 Git Branch
 
 ```
-feature/UC18-retrieve-contacts-by-date-range
+feature/UC22-read-entries-from-jsonserver
 ```
 
 After review this branch will be merged into:
@@ -151,19 +177,12 @@ dev
 
 # 📌 Next Implementation
 
-### UC19 – Count Contacts by City or State (Database)
+### UC23 – Add Entries to JSON Server
 
 Next features:
 
-- Count contacts grouped by city
-- Count contacts grouped by state
-- Use SQL aggregation with **GROUP BY**
-
-Example result:
-
-```
-Bhopal → 3 contacts
-Delhi → 2 contacts
-```
+- Send contact data to JSON Server
+- Use **POST request**
+- Demonstrate REST API integration with external services
 
 ---
