@@ -269,4 +269,13 @@ public class AddressBookController {
 
         return jsonService.updateContactInJSONServer(id, contact);
     }
+    
+    // Delete Contact from JSON Server
+    @DeleteMapping("/contacts/jsonserver/delete/{id}")
+    public String deleteContactFromJSONServer(@PathVariable int id) {
+
+        JSONServerService jsonService = new JSONServerService();
+
+        return jsonService.deleteContactFromJSONServer(id);
+    }
 }
