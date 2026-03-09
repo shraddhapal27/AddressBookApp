@@ -7,24 +7,24 @@ This project follows a **Git Feature Branch Workflow**, where each **Use Case (U
 
 ---
 
-# 🚀 UC5 – Add Multiple Contacts
+# 🚀 UC8 – Search Person by City or State
 
-This branch implements the ability to **add multiple contacts to the Address Book in a single request**.
+This branch introduces functionality to **search contacts by city or state across all address books**.
 
-Previously, contacts could only be added **one at a time**.  
-With UC5, the system now supports **bulk insertion of contacts** using a REST API.
+The search feature allows users to retrieve contacts that belong to a specific **city** or **state**, making it easier to locate people based on geographic information.
 
-Contacts are stored in a **local in-memory list** and handled through the **Service Layer**.
+The implementation uses **Java Streams API** to efficiently filter contacts.
 
 ---
 
 # 🛠 Tech Stack
 
-- ☕ Java 17  
-- 🌱 Spring Boot  
-- 📦 Maven  
-- 🔗 REST API  
-- 🐙 Git & GitHub  
+- ☕ Java 17
+- 🌱 Spring Boot
+- 📦 Maven
+- 🔗 REST API
+- 🐙 Git & GitHub
+- ⚡ Java Streams API
 
 ---
 
@@ -43,6 +43,7 @@ AddressBookApp
 │   │
 │   ├── model
 │   │      Contact.java
+│   │      AddressBook.java
 │   │
 │   └── AddressBookAppApplication.java
 │
@@ -57,153 +58,109 @@ AddressBookApp
 # 🧠 Architecture
 
 ```
-Client (CURL / Postman / Browser)
-            │
-            ▼
-        Controller
-            │
-            ▼
-         Service
-            │
-            ▼
-     Local List Storage
+Client (CURL / Postman)
+        │
+        ▼
+     Controller
+        │
+        ▼
+      Service
+        │
+        ▼
+Map<String, AddressBook>
+        │
+        ▼
+Java Streams Filtering
 ```
 
-### Responsibilities
-
-**Controller**
-- Handles HTTP requests
-- Maps API endpoints
-- Communicates with service layer
-
-**Service**
-- Contains business logic
-- Performs CRUD operations on contacts
-
-**Model**
-- Defines the Contact data structure
+Contacts from **all address books** are collected and filtered using Streams.
 
 ---
 
-# 👤 Contact Model
+# 🔎 Search Logic (Java Streams)
 
-The `Contact` class represents a person in the Address Book.
+Contacts are retrieved using:
 
-### Fields
+```
+addressBooks.values()
+        .stream()
+        .flatMap(addressBook -> addressBook.getContacts().stream())
+```
 
-| Field | Description |
-|------|-------------|
-| id | Unique identifier |
-| firstName | Person's first name |
-| lastName | Person's last name |
-| address | Street address |
-| city | City |
-| state | State |
-| zip | Postal code |
-| phoneNumber | Contact number |
-| email | Email address |
+Then filtered by **city or state**.
 
 ---
 
 # 🌐 API Endpoints
 
-### ➕ Add Contact
+### 🔍 Search by City
 
 ```
-POST /contacts
+GET /contacts/city/{city}
 ```
 
-Adds a single contact.
+Example:
+
+```
+GET /contacts/city/Bhopal
+```
 
 ---
 
-### 📦 Add Multiple Contacts
+### 🔍 Search by State
 
 ```
-POST /contacts/bulk
+GET /contacts/state/{state}
 ```
 
-Adds multiple contacts in a single request.
-
----
-
-### 📋 Get All Contacts
+Example:
 
 ```
-GET /contacts
+GET /contacts/state/MP
 ```
-
-Returns all contacts stored in memory.
-
----
-
-### 🔍 Get Contact by ID
-
-```
-GET /contacts/{id}
-```
-
-Returns the contact matching the given ID.
-
----
-
-### ✏️ Update Contact
-
-```
-PUT /contacts/{id}
-```
-
-Updates contact details.
-
----
-
-### ❌ Delete Contact
-
-```
-DELETE /contacts/{id}
-```
-
-Deletes the contact with the specified ID.
 
 ---
 
 # 🧪 Testing Using CURL
 
-### Add Multiple Contacts
+### Search by City
 
 ```
-curl -X POST http://localhost:8080/contacts/bulk -H "Content-Type: application/json" -d "[{\"id\":2,\"firstName\":\"Rahul\",\"lastName\":\"Sharma\",\"address\":\"Delhi\",\"city\":\"Delhi\",\"state\":\"Delhi\",\"zip\":\"110001\",\"phoneNumber\":\"8888888888\",\"email\":\"rahul@email.com\"},{\"id\":3,\"firstName\":\"Priya\",\"lastName\":\"Patel\",\"address\":\"Ahmedabad\",\"city\":\"Ahmedabad\",\"state\":\"Gujarat\",\"zip\":\"380001\",\"phoneNumber\":\"7777777777\",\"email\":\"priya@email.com\"}]"
+curl http://localhost:8080/contacts/city/Bhopal
 ```
 
 ---
 
-### Get All Contacts
+### Search by State
 
 ```
-curl http://localhost:8080/contacts
+curl http://localhost:8080/contacts/state/MP
+```
+
+Example Response:
+
+```
+[
+ {
+  "id":1,
+  "firstName":"Bhumi",
+  "city":"Bhopal",
+  "state":"MP"
+ }
+]
 ```
 
 ---
 
 # ▶️ How to Run the Project
 
-### 1️⃣ Clone the repository
+### Clone repository
 
 ```
 git clone https://github.com/<your-username>/AddressBookApp.git
 ```
 
----
-
-### 2️⃣ Navigate to the project
-
-```
-cd AddressBookApp
-```
-
----
-
-### 3️⃣ Run the Spring Boot application
+### Run project
 
 ```
 mvn spring-boot:run
@@ -219,23 +176,13 @@ from your IDE.
 
 ---
 
-### 4️⃣ Access APIs
-
-```
-http://localhost:8080/contacts
-```
-
----
-
 # 🌿 Git Branch
 
 ```
-feature/UC5-add-multiple-contacts
+feature/UC8-search-person-by-city-or-state
 ```
 
-This branch implements **Use Case 5 – Add Multiple Contacts**.
-
-After review it will be merged into:
+After review this branch will be merged into:
 
 ```
 dev
@@ -245,12 +192,13 @@ dev
 
 # 📌 Next Implementation
 
-### UC6 – Multiple Address Books
+### UC9 – View Persons by City or State
 
 Next features:
 
-- 📚 Support multiple address books
-- 🗂 Store address books using a **Map or Dictionary**
-- 👥 Manage contacts per address book
+- Group contacts by **city**
+- Group contacts by **state**
+- Return **city → list of persons**
+- Use **Java Streams grouping**
 
 ---
