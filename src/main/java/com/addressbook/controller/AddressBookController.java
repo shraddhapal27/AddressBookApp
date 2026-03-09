@@ -1,4 +1,3 @@
-
 package com.addressbook.controller;
 
 import java.util.List;
@@ -14,6 +13,7 @@ import com.addressbook.io.AddressBookJSONService;
 import com.addressbook.model.AddressBook;
 import com.addressbook.model.Contact;
 import com.addressbook.service.AddressBookService;
+import com.addressbook.service.JSONServerService;
 
 @RestController
 public class AddressBookController {
@@ -240,5 +240,33 @@ public class AddressBookController {
         dbService.addMultipleContacts(contacts);
 
         return "Multiple contacts are being added using threads";
+    }
+    
+    // Get Contacts from JSON Server
+    @GetMapping("/contacts/jsonserver")
+    public List<Contact> getContactsFromJSONServer() {
+
+        JSONServerService jsonService = new JSONServerService();
+
+        return jsonService.getContactsFromJSONServer();
+    }
+    
+    // Add Multiple Contacts to JSON Server
+    @PostMapping("/contacts/jsonserver/add-multiple")
+    public String addContactsToJSONServer(@RequestBody List<Contact> contacts) {
+
+        JSONServerService jsonService = new JSONServerService();
+
+        return jsonService.addMultipleContactsToJSONServer(contacts);
+    }
+    
+    // Update Contact in JSON Server
+    @PutMapping("/contacts/jsonserver/update/{id}")
+    public String updateContactInJSONServer(@PathVariable int id,
+                                            @RequestBody Contact contact) {
+
+        JSONServerService jsonService = new JSONServerService();
+
+        return jsonService.updateContactInJSONServer(id, contact);
     }
 }
