@@ -202,4 +202,22 @@ public class AddressBookController {
 
         return dbService.getContactsByDateRange(startDate, endDate);
     }
+    
+    // Count Contacts by City from Database
+    @GetMapping("/contacts/db/count/city")
+    public Map<String, Integer> countContactsByCity1() {
+
+        AddressBookDBService dbService = new AddressBookDBService();
+
+        return dbService.countContactsByCity();
+    }
+    
+    // Count Contacts by State from Database
+    @GetMapping("/contacts/db/count/state")
+    public Map<String, Integer> countContactsByState1() {
+
+        AddressBookDBService dbService = new AddressBookDBService();
+
+        return dbService.countContactsByState();
+    }
 }

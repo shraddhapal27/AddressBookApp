@@ -8,7 +8,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 // Service to handle database operations for Address Book
 public class AddressBookDBService {
@@ -141,5 +143,71 @@ public class AddressBookDBService {
         }
 
         return contacts;
+    }
+    
+    // Count contacts by city
+    public Map<String, Integer> countContactsByCity() {
+
+        Map<String, Integer> cityCount = new HashMap<>();
+
+        String query = "SELECT city, COUNT(*) as count FROM contacts GROUP BY city";
+
+        try {
+
+            Connection connection =
+                    DriverManager.getConnection(URL, USER, PASSWORD);
+
+            Statement statement = connection.createStatement();
+
+            ResultSet rs = statement.executeQuery(query);
+
+            while (rs.next()) {
+
+                String city = rs.getString("city");
+                int count = rs.getInt("count");
+
+                cityCount.put(city, count);
+            }
+
+            connection.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return cityCount;
+    }
+    
+    // Count contacts by state
+    public Map<String, Integer> countContactsByState() {
+
+        Map<String, Integer> stateCount = new HashMap<>();
+
+        String query = "SELECT state, COUNT(*) as count FROM contacts GROUP BY state";
+
+        try {
+
+            Connection connection =
+                    DriverManager.getConnection(URL, USER, PASSWORD);
+
+            Statement statement = connection.createStatement();
+
+            ResultSet rs = statement.executeQuery(query);
+
+            while (rs.next()) {
+
+                String state = rs.getString("state");
+                int count = rs.getInt("count");
+
+                stateCount.put(state, count);
+            }
+
+            connection.close();
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return stateCount;
     }
 }
