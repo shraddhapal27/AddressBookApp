@@ -6,14 +6,14 @@ This project follows a **Git Feature Branch Workflow**, where each **Use Case (U
 
 ---
 
-# 🚀 UC24 – Update Entry in JSON Server
+# 🚀 UC25 – Delete Entry from JSON Server
 
-This branch introduces functionality to **update an existing contact entry stored in JSON Server**.
+This branch introduces functionality to **delete an existing contact entry from JSON Server**.
 
 JSON Server acts as a **mock REST API backend** that stores data in a JSON file and exposes it through REST endpoints.  
-The Spring Boot application communicates with this server and updates contact data using an **HTTP PUT request**.
+The Spring Boot application communicates with JSON Server and deletes contact records using an **HTTP DELETE request**.
 
-This demonstrates how a Spring Boot application can **modify data in an external REST service**.
+This feature demonstrates how a Spring Boot application can **remove resources from an external REST service**.
 
 ---
 
@@ -49,7 +49,7 @@ AddressBookApp
 
 # 🌐 JSON Server Setup
 
-JSON Server provides a fake REST API for testing.
+JSON Server provides a fake REST API for testing and development.
 
 ### Install JSON Server
 
@@ -59,7 +59,7 @@ npm install -g json-server
 
 ---
 
-### Create JSON Data File
+### Create JSON Database File
 
 Create a file named:
 
@@ -77,6 +77,12 @@ Example content:
       "firstName": "Rahul",
       "lastName": "Sharma",
       "city": "Delhi"
+    },
+    {
+      "id": 2,
+      "firstName": "Bhumi",
+      "lastName": "Shrivas",
+      "city": "Bhopal"
     }
   ]
 }
@@ -90,7 +96,7 @@ Example content:
 json-server --watch db.json --port 3000
 ```
 
-Server endpoint:
+JSON Server endpoint:
 
 ```
 http://localhost:3000/contacts
@@ -100,46 +106,35 @@ http://localhost:3000/contacts
 
 # 🧠 Implementation
 
-The Spring Boot application sends an **HTTP PUT request** to update a specific contact in JSON Server.
+The Spring Boot application sends an **HTTP DELETE request** to remove a contact from JSON Server.
 
-Example logic:
+Example logic used in the service layer:
 
 ```
 RestTemplate restTemplate = new RestTemplate();
-restTemplate.put("http://localhost:3000/contacts/{id}", contact);
+restTemplate.delete("http://localhost:3000/contacts/{id}");
 ```
 
-The existing contact entry is replaced with the updated data.
+The specified contact entry is removed from the JSON database.
 
 ---
 
 # 🌐 API Endpoint
 
-### Update Contact in JSON Server
+### Delete Contact from JSON Server
 
 ```
-PUT /contacts/jsonserver/update/{id}
+DELETE /contacts/jsonserver/delete/{id}
 ```
 
-This endpoint updates the contact with the specified ID.
+This endpoint deletes the contact with the specified ID.
 
 ---
 
 # 📥 Example Request
 
 ```
-PUT /contacts/jsonserver/update/1
-```
-
-Request body:
-
-```
-{
- "id": 1,
- "firstName": "Bhumi",
- "lastName": "Shrivas",
- "city": "Bhopal"
-}
+DELETE /contacts/jsonserver/delete/1
 ```
 
 ---
@@ -147,7 +142,7 @@ Request body:
 # 📤 Example Response
 
 ```
-Contact updated successfully in JSON Server
+Contact deleted successfully from JSON Server
 ```
 
 ---
@@ -155,32 +150,30 @@ Contact updated successfully in JSON Server
 # 🧪 Testing Using CURL
 
 ```
-curl -X PUT http://localhost:8080/contacts/jsonserver/update/1 \
--H "Content-Type: application/json" \
--d '{"id":1,"firstName":"Bhumi","lastName":"Shrivas","city":"Bhopal"}'
+curl -X DELETE http://localhost:8080/contacts/jsonserver/delete/1
 ```
 
 ---
 
-# 🔍 Verify Update
+# 🔍 Verify Deletion
 
-Open the JSON Server endpoint:
+Open the JSON Server endpoint in a browser:
 
 ```
 http://localhost:3000/contacts
 ```
 
-The contact entry should reflect the updated information.
+The contact entry with the specified ID should no longer appear in the list.
 
 ---
 
 # 🌿 Git Branch
 
 ```
-feature/UC24-update-entry-jsonserver
+feature/UC25-delete-entry-jsonserver
 ```
 
-After review this branch will be merged into:
+After review, this branch will be merged into:
 
 ```
 dev
@@ -188,10 +181,16 @@ dev
 
 ---
 
-# 📌 Next Implementation
+# 📌 Project Completion
 
-### UC25 – Delete Entry from JSON Server
+With this branch, the **AddressBookApp project implementation is complete**, covering all use cases from **UC1 to UC25**.
 
-The next feature will allow deleting contacts from JSON Server using **HTTP DELETE requests**.
+The application now supports:
+
+- Address Book REST APIs
+- File operations (CSV, JSON)
+- Database integration (MySQL)
+- Multithreading
+- Integration with external REST APIs (JSON Server)
 
 ---
