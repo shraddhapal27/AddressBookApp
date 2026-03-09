@@ -1,6 +1,5 @@
+
 package com.addressbook.model;
-
-
 
 import java.util.ArrayList;
 import java.util.List;
