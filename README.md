@@ -1,3 +1,4 @@
+
 # 📒 AddressBookApp
 
 A **Spring Boot REST API** application for managing contacts in an Address Book.
@@ -6,14 +7,14 @@ This project follows a **Git Feature Branch Workflow**, where each **Use Case (U
 
 ---
 
-# 🚀 UC6 – Multiple Address Books
+# 🚀 UC7 – Prevent Duplicate Contact
 
-This branch introduces support for **multiple Address Books** in the system.
+This branch introduces functionality to **prevent duplicate contacts** from being added to an Address Book.
 
-Previously, the application supported only **one list of contacts**.  
-With UC6, the system now allows users to **create and manage multiple address books**, each containing its own contacts.
+Previously, the system allowed multiple contacts with the same name to be inserted.  
+With UC7 implemented, the application now checks for **duplicate entries before adding a contact**.
 
-Each Address Book has a **unique name** and stores a **list of contacts**.
+A contact is considered **duplicate if the first name and last name match an existing contact** in the same address book.
 
 ---
 
@@ -71,77 +72,26 @@ Client (CURL / Postman / Browser)
 
 Each **AddressBook** contains its own list of contacts.
 
-Example structure:
-
-```
-AddressBooks
-│
-├── Personal
-│     ├── Contact1
-│     └── Contact2
-│
-├── Work
-│     ├── Contact1
-│     └── Contact2
-```
+Duplicate checking occurs inside the **Service Layer** before inserting a new contact.
 
 ---
 
-# 📦 Data Structure Used
+# 🚫 Duplicate Prevention Logic
 
-A **Map** is used to store address books.
+To detect duplicates, the `equals()` and `hashCode()` methods are implemented in the `Contact` class.
+
+Two contacts are considered **equal if**:
 
 ```
-Map<String, AddressBook>
+firstName + lastName are the same
 ```
-
-Where:
-
-| Key | Value |
-|----|----|
-| AddressBook Name | AddressBook Object |
 
 Example:
 
-```
-{
- "Personal": AddressBook,
- "Work": AddressBook
-}
-```
-
----
-
-# 👤 Contact Model
-
-The `Contact` class represents a person in an Address Book.
-
-### Fields
-
-| Field | Description |
-|------|-------------|
-| id | Unique identifier |
-| firstName | Person's first name |
-| lastName | Person's last name |
-| address | Street address |
-| city | City |
-| state | State |
-| zip | Postal code |
-| phoneNumber | Contact number |
-| email | Email address |
-
----
-
-# 📚 AddressBook Model
-
-The `AddressBook` class represents a collection of contacts.
-
-### Fields
-
-| Field | Description |
-|------|-------------|
-| name | Name of address book |
-| contacts | List of contacts |
+| Contact 1 | Contact 2 | Result |
+|-----------|-----------|-------|
+| Bhumi Shrivas | Bhumi Shrivas | ❌ Duplicate |
+| Bhumi Shrivas | Rahul Sharma | ✅ Allowed |
 
 ---
 
@@ -157,23 +107,15 @@ Creates a new address book.
 
 ---
 
-### 📋 Get All Address Books
-
-```
-GET /addressbooks
-```
-
-Returns all address books in the system.
-
----
-
-### ➕ Add Contact to Address Book
+### ➕ Add Contact
 
 ```
 POST /addressbooks/{name}/contacts
 ```
 
-Adds a contact to a specific address book.
+Adds a contact to the specified address book.
+
+If a duplicate contact is detected, the system will return a **duplicate warning message**.
 
 Example:
 
@@ -183,7 +125,7 @@ POST /addressbooks/Personal/contacts
 
 ---
 
-### 👥 Get Contacts from Address Book
+### 👥 Get Contacts
 
 ```
 GET /addressbooks/{name}/contacts
@@ -191,11 +133,15 @@ GET /addressbooks/{name}/contacts
 
 Returns all contacts from the specified address book.
 
-Example:
+---
+
+### 📋 Get All Address Books
 
 ```
-GET /addressbooks/Personal/contacts
+GET /addressbooks
 ```
+
+Returns all address books.
 
 ---
 
@@ -215,12 +161,24 @@ curl -X POST "http://localhost:8080/addressbooks?name=Personal"
 curl -X POST http://localhost:8080/addressbooks/Personal/contacts -H "Content-Type: application/json" -d "{\"id\":1,\"firstName\":\"Bhumi\",\"lastName\":\"Shrivas\",\"city\":\"Bhopal\"}"
 ```
 
----
-
-### Get Contacts
+Response:
 
 ```
-curl http://localhost:8080/addressbooks/Personal/contacts
+Contact added successfully
+```
+
+---
+
+### Try Duplicate Contact
+
+```
+curl -X POST http://localhost:8080/addressbooks/Personal/contacts -H "Content-Type: application/json" -d "{\"id\":2,\"firstName\":\"Bhumi\",\"lastName\":\"Shrivas\",\"city\":\"Bhopal\"}"
+```
+
+Response:
+
+```
+Duplicate contact not allowed
 ```
 
 ---
@@ -235,7 +193,7 @@ git clone https://github.com/<your-username>/AddressBookApp.git
 
 ---
 
-### 2️⃣ Navigate to project
+### 2️⃣ Navigate to project directory
 
 ```
 cd AddressBookApp
@@ -243,7 +201,7 @@ cd AddressBookApp
 
 ---
 
-### 3️⃣ Run application
+### 3️⃣ Run the application
 
 ```
 mvn spring-boot:run
@@ -270,10 +228,10 @@ http://localhost:8080/addressbooks
 # 🌿 Git Branch
 
 ```
-feature/UC6-multiple-addressbooks
+feature/UC7-prevent-duplicate-contact
 ```
 
-This branch implements **Use Case 6 – Multiple Address Books**.
+This branch implements **Use Case 7 – Prevent Duplicate Contact**.
 
 After review it will be merged into:
 
@@ -285,13 +243,13 @@ dev
 
 # 📌 Next Implementation
 
-### UC7 – Prevent Duplicate Contact
+### UC8 – Search Person by City or State
 
 Next features:
 
-- 🚫 Prevent duplicate contacts in an address book
-- 🔍 Search contact before insertion
-- 🧩 Implement `equals()` method
-- ⚡ Use **Java Streams**
+- 🔍 Search contacts by **city**
+- 🔍 Search contacts by **state**
+- ⚡ Use **Java Streams API**
+- 📊 Return matching contacts
 
 ---
