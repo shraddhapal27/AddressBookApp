@@ -7,13 +7,13 @@ This project follows a **Git Feature Branch Workflow**, where each **Use Case (U
 
 ---
 
-# 🚀 UC18 – Retrieve Contacts by Date Range
+# 🚀 UC21 – Add Multiple Contacts Using Multithreading
 
-This branch introduces functionality to **retrieve contacts added within a specific date range from the MySQL database**.
+This branch introduces functionality to **add multiple contacts to the MySQL database simultaneously using Java multithreading**.
 
-The application now supports querying contacts based on the date they were added using **SQL date filtering**.
+Instead of inserting contacts one by one, the application creates a **separate thread for each contact insertion**, allowing multiple database operations to run concurrently.
 
-This feature is implemented using **JDBC and SQL `BETWEEN` operator**.
+This improves performance when inserting large numbers of contacts.
 
 ---
 
@@ -25,6 +25,7 @@ This feature is implemented using **JDBC and SQL `BETWEEN` operator**.
 - 🔗 REST API  
 - 🐬 MySQL Database  
 - 🔌 JDBC  
+- 🧵 Java Multithreading  
 
 ---
 
@@ -51,62 +52,61 @@ AddressBookApp
 
 ---
 
-# 🗄 Database Update
+# 🧠 Multithreading Implementation
 
-A new column was added to the contacts table to track when a contact was added.
+Each contact insertion runs in a separate thread.
 
-```
-date_added DATE
-```
-
-SQL used:
+Example logic:
 
 ```
-ALTER TABLE contacts
-ADD date_added DATE;
+contacts.forEach(contact -> {
+    new Thread(() -> {
+        addContact(contact);
+    }).start();
+});
 ```
 
-Example table structure:
-
-| id | first_name | last_name | city | state | date_added |
-|----|-----------|-----------|------|------|-----------|
-| 1 | Bhumi | Shrivas | Bhopal | MP | 2026-03-09 |
-| 2 | Rahul | Sharma | Delhi | Delhi | 2026-03-08 |
-
----
-
-# 🧠 SQL Query Used
-
-```
-SELECT * FROM contacts
-WHERE date_added BETWEEN ? AND ?;
-```
-
-PreparedStatement is used to safely bind the start and end dates.
+This allows multiple contacts to be inserted into the database at the same time.
 
 ---
 
 # 🌐 API Endpoint
 
-### Retrieve Contacts by Date Range
+### Add Multiple Contacts to Database
 
 ```
-GET /contacts/db/date-range
+POST /contacts/db/add-multiple
 ```
 
-Parameters:
-
-| Parameter | Description |
-|----------|-------------|
-| startDate | Start date for filtering |
-| endDate | End date for filtering |
+This endpoint accepts a list of contacts and inserts them into the database using multithreading.
 
 ---
 
-# 📥 Example Request
+# 📥 Example Request Body
 
 ```
-GET /contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10
+[
+ {
+  "firstName":"Rahul",
+  "lastName":"Sharma",
+  "address":"Connaught Place",
+  "city":"Delhi",
+  "state":"Delhi",
+  "zip":"110001",
+  "phoneNumber":"8888888888",
+  "email":"rahul@email.com"
+ },
+ {
+  "firstName":"Amit",
+  "lastName":"Patel",
+  "address":"Satellite",
+  "city":"Ahmedabad",
+  "state":"Gujarat",
+  "zip":"380015",
+  "phoneNumber":"9998887777",
+  "email":"amit@email.com"
+ }
+]
 ```
 
 ---
@@ -114,15 +114,7 @@ GET /contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10
 # 📤 Example Response
 
 ```
-[
- {
-  "id":1,
-  "firstName":"Bhumi",
-  "lastName":"Shrivas",
-  "city":"Bhopal",
-  "state":"MP"
- }
-]
+Multiple contacts are being added using threads
 ```
 
 ---
@@ -130,15 +122,29 @@ GET /contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10
 # 🧪 Testing Using CURL
 
 ```
-curl "http://localhost:8080/contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10"
+curl -X POST http://localhost:8080/contacts/db/add-multiple \
+-H "Content-Type: application/json" \
+-d '[{"firstName":"Rahul","lastName":"Sharma","address":"Connaught","city":"Delhi","state":"Delhi","zip":"110001","phoneNumber":"8888888888","email":"rahul@email.com"},{"firstName":"Amit","lastName":"Patel","address":"Satellite","city":"Ahmedabad","state":"Gujarat","zip":"380015","phoneNumber":"9998887777","email":"amit@email.com"}]'
 ```
+
+---
+
+# 🔍 Verify in Database
+
+Run the following query in MySQL:
+
+```
+SELECT * FROM contacts;
+```
+
+You should see multiple records inserted into the table.
 
 ---
 
 # 🌿 Git Branch
 
 ```
-feature/UC18-retrieve-contacts-by-date-range
+feature/UC21-add-multiple-contacts-multithreading
 ```
 
 After review this branch will be merged into:
@@ -151,19 +157,12 @@ dev
 
 # 📌 Next Implementation
 
-### UC19 – Count Contacts by City or State (Database)
+### UC22 – Read Entries From JSON Server
 
 Next features:
 
-- Count contacts grouped by city
-- Count contacts grouped by state
-- Use SQL aggregation with **GROUP BY**
-
-Example result:
-
-```
-Bhopal → 3 contacts
-Delhi → 2 contacts
-```
+- Integrate application with **JSON Server**
+- Fetch contact entries from a mock REST API
+- Demonstrate external API communication
 
 ---
