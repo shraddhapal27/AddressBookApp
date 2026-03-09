@@ -1,4 +1,3 @@
-
 # 📒 AddressBookApp
 
 A **Spring Boot REST API** application for managing contacts in an Address Book.
@@ -7,17 +6,13 @@ The project is implemented using a **Git Feature Branch Workflow**, where each u
 
 ---
 
-# 🚀 UC12 – Sort Contacts by City, State, and Zip
+# 🚀 UC13 – Read / Write Address Book Using File IO
 
-This branch adds functionality to **sort contacts based on geographic attributes**.
+This branch introduces **File Input/Output operations** for the Address Book application.
 
-Contacts can now be sorted by:
+Contacts can now be **written to a file** using Java File IO.
 
-- City
-- State
-- Zip Code
-
-Sorting is implemented using the **Java Streams API with Comparator**.
+This allows persistent storage of contact information outside the application memory.
 
 ---
 
@@ -28,7 +23,7 @@ Sorting is implemented using the **Java Streams API with Comparator**.
 - Maven
 - REST API
 - Git & GitHub
-- Java Streams API
+- Java File IO
 
 ---
 
@@ -47,74 +42,89 @@ AddressBookApp
 │      Contact.java
 │      AddressBook.java
 │
+├── io
+│      AddressBookFileService.java
+│
 └── AddressBookAppApplication.java
 ```
 
 ---
 
-# 🧠 Implementation
+# 🧠 Implementation Logic
 
-Contacts from all address books are collected and sorted using:
+Contacts are retrieved from all address books and written to a text file.
 
-```
-Comparator.comparing(Contact::getCity)
-Comparator.comparing(Contact::getState)
-Comparator.comparing(Contact::getZip)
-```
+The application performs the following steps:
 
-Sorting is performed using **Java Streams**.
-
----
-
-# 🌐 API Endpoints
-
-### Sort Contacts by City
+1. Retrieve all contacts using
 
 ```
-GET /contacts/sort/city
+addressBookService.getAllContacts()
 ```
 
----
-
-### Sort Contacts by State
+2. Pass contacts to the File Service
 
 ```
-GET /contacts/sort/state
+AddressBookFileService.writeContactsToFile()
+```
+
+3. Write contact details to
+
+```
+contacts.txt
 ```
 
 ---
 
-### Sort Contacts by Zip
+# 📁 Example File Output
+
+Example content of `contacts.txt`:
 
 ```
-GET /contacts/sort/zip
+Bhumi Shrivas Bhopal
+Rahul Sharma Delhi
+Amit Patel Ahmedabad
 ```
+
+Each line represents a contact entry.
+
+---
+
+# 🌐 API Endpoint
+
+### Write Contacts to File
+
+```
+GET /contacts/write
+```
+
+This API retrieves all contacts and writes them to the file.
 
 ---
 
 # 🧪 Testing Using CURL
 
 ```
-curl http://localhost:8080/contacts/sort/city
+curl http://localhost:8080/contacts/write
 ```
 
-```
-curl http://localhost:8080/contacts/sort/state
-```
+Response:
 
 ```
-curl http://localhost:8080/contacts/sort/zip
+Contacts written to file
 ```
+
+A file named **contacts.txt** will be created in the project directory.
 
 ---
 
 # 🌿 Git Branch
 
 ```
-feature/UC12-sort-contacts-by-city-state-zip
+feature/UC13-read-write-addressbook-file-io
 ```
 
-This branch implements **Use Case 12 – Sorting Contacts by Location Fields**.
+This branch implements **Use Case 13 – File IO for Address Book Contacts**.
 
 After review it will be merged into:
 
@@ -126,12 +136,12 @@ dev
 
 # 📌 Next Implementation
 
-### UC13 – Read / Write Address Book Using File IO
+### UC14 – Read / Write AddressBook CSV
 
-Next features include:
+Next features:
 
-- Writing address book contacts to file
-- Reading contacts from file
-- Using Java File IO
+- Write contacts to **CSV file**
+- Read contacts from CSV
+- Use **OpenCSV Library**
 
 ---
