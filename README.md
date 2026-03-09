@@ -3,15 +3,15 @@
 
 A **Spring Boot REST API** application for managing contacts in an Address Book.
 
-This project is developed using a **Git Feature Branch Workflow**, where each **Use Case (UC)** is implemented in a separate branch and later merged into the `dev` branch.
+This project follows a **Git Feature Branch Workflow**, where every **Use Case (UC)** is implemented in a separate branch and later merged into the `dev` branch.
 
 ---
 
-# 🚀 UC1 – Create Contact Model & Basic Controller
+# 🚀 UC2 – Add Contact Using Service Layer
 
-This branch implements the **initial setup of the Address Book application**.
+This branch implements the ability to **add a new contact to the Address Book using a REST API**.
 
-It includes the **Contact model** and a **basic REST API endpoint** to verify that the Spring Boot application is running successfully.
+The contacts are stored in a **local in-memory list** and accessed through a **Service Layer**, following the **Controller → Service → Model architecture**.
 
 ---
 
@@ -32,19 +32,53 @@ AddressBookApp
 │
 ├── src/main/java/com/addressbookapp
 │
-│ ├── controller
-│ │ AddressBookController.java
-│ │
-│ ├── model
-│ │ Contact.java
-│ │
-│ └── AddressBookAppApplication.java
+│   ├── controller
+│   │      AddressBookController.java
+│   │
+│   ├── service
+│   │      AddressBookService.java
+│   │
+│   ├── model
+│   │      Contact.java
+│   │
+│   └── AddressBookAppApplication.java
 │
 ├── src/main/resources
-│ application.properties
+│      application.properties
 │
 └── pom.xml
 ```
+
+---
+
+# 🧠 Architecture
+
+```
+Client (CURL / Postman / Browser)
+            │
+            ▼
+        Controller
+            │
+            ▼
+         Service
+            │
+            ▼
+     Local List Storage
+```
+
+### Responsibilities
+
+**Controller**
+- Handles HTTP requests
+- Calls service methods
+- Returns API responses
+
+**Service**
+- Contains business logic
+- Manages contact list
+
+**Model**
+- Represents Contact data structure
 
 ---
 
@@ -52,7 +86,7 @@ AddressBookApp
 
 The `Contact` class represents a person in the Address Book.
 
-### Fields included
+### Fields
 
 | Field | Description |
 |------|-------------|
@@ -60,80 +94,120 @@ The `Contact` class represents a person in the Address Book.
 | firstName | Person's first name |
 | lastName | Person's last name |
 | address | Street address |
-| city | City name |
-| state | State name |
+| city | City |
+| state | State |
 | zip | Postal code |
-| phoneNumber | Contact phone number |
+| phoneNumber | Contact number |
 | email | Email address |
 
 ---
 
-# 🌐 API Endpoint
+# 🌐 API Endpoints
 
-### Welcome API
+### ➕ Add Contact
 
-GET /addressbook
+```
+POST /contacts
+```
 
-This endpoint verifies that the **Address Book application is running**.
+Adds a new contact to the address book.
 
 ---
 
-# 🧪 Test Using CURL
+### 📋 Get All Contacts
 
-Run the following command in terminal:
+```
+GET /contacts
+```
 
-curl http://localhost:8080/addressbook
+Returns the list of all contacts stored in memory.
 
-### Expected Response
-Welcome to Address Book Application
+---
+
+# 🧪 Testing Using CURL
+
+### Add Contact
+
+```
+curl -X POST http://localhost:8080/contacts -H "Content-Type: application/json" -d "{\"id\":1,\"firstName\":\"Bhumi\",\"lastName\":\"Shrivas\",\"address\":\"MP Nagar\",\"city\":\"Bhopal\",\"state\":\"MP\",\"zip\":\"462001\",\"phoneNumber\":\"9876543210\",\"email\":\"bhumi@email.com\"}"
+```
+
+---
+
+### Get All Contacts
+
+```
+curl http://localhost:8080/contacts
+```
 
 ---
 
 # ▶️ How to Run the Project
 
 ### 1️⃣ Clone the repository
-git clone https://github.com/
-<your-username>/AddressBookApp.git
+
+```
+git clone https://github.com/<your-username>/AddressBookApp.git
+```
 
 ---
 
-### 2️⃣ Navigate to the project
+### 2️⃣ Navigate to project folder
+
+```
 cd AddressBookApp
+```
 
 ---
 
 ### 3️⃣ Run the Spring Boot application
+
+```
 mvn spring-boot:run
+```
+
 or run
+
+```
 AddressBookAppApplication.java
+```
+
 from your IDE.
 
 ---
 
-### 4️⃣ Open in browser
-http://localhost:8080/addressbook
+### 4️⃣ Access the API
+
+```
+http://localhost:8080/contacts
+```
 
 ---
 
 # 🌿 Git Branch
-feature/UC1-create-contact
 
-This branch contains the implementation for **Use Case 1**.
+```
+feature/UC2-add-contact
+```
+
+This branch implements **Use Case 2 – Add Contact**.
 
 After review it will be merged into:
+
+```
 dev
+```
 
 ---
 
 # 📌 Next Implementation
 
-### UC2 – Add Contact
+### UC3 – Edit Contact
 
 Next features to be implemented:
 
-- ➕ Add new contact using **POST API**
-- 📋 Store contacts in a **Local List**
-- 🧠 Introduce **Service Layer**
-- 🔍 Retrieve all contacts
+- ✏️ Update contact using **PUT API**
+- 🔍 Get contact by **ID**
+- ❌ Delete contact
 
 ---
