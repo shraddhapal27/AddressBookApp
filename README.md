@@ -3,17 +3,17 @@
 
 A **Spring Boot REST API** application for managing contacts in an Address Book.
 
-The project follows a **Git Feature Branch Workflow**, where each **Use Case (UC)** is implemented in a separate branch and later merged into the `dev` branch.
+This project follows a **Git Feature Branch Workflow**, where each **Use Case (UC)** is implemented in a separate branch and later merged into the `dev` branch.
 
 ---
 
-# 🚀 UC17 – Update Contact and Sync With Database
+# 🚀 UC18 – Retrieve Contacts by Date Range
 
-This branch introduces functionality to **update contact information stored in the MySQL database**.
+This branch introduces functionality to **retrieve contacts added within a specific date range from the MySQL database**.
 
-The update operation ensures that any modification made to a contact is **synchronized with the database**.
+The application now supports querying contacts based on the date they were added using **SQL date filtering**.
 
-The implementation uses **JDBC PreparedStatement**, which provides a secure and efficient way to execute SQL queries.
+This feature is implemented using **JDBC and SQL `BETWEEN` operator**.
 
 ---
 
@@ -51,72 +51,78 @@ AddressBookApp
 
 ---
 
-# 🗄 Database Configuration
+# 🗄 Database Update
 
-Database name:
-
-```
-addressbook_db
-```
-
-Table structure:
+A new column was added to the contacts table to track when a contact was added.
 
 ```
-contacts
+date_added DATE
 ```
 
-| Column | Description |
-|------|-------------|
-| id | Contact ID |
-| first_name | First name |
-| last_name | Last name |
-| address | Address |
-| city | City |
-| state | State |
-| zip | Zip code |
-| phone | Phone number |
-| email | Email address |
+SQL used:
+
+```
+ALTER TABLE contacts
+ADD date_added DATE;
+```
+
+Example table structure:
+
+| id | first_name | last_name | city | state | date_added |
+|----|-----------|-----------|------|------|-----------|
+| 1 | Bhumi | Shrivas | Bhopal | MP | 2026-03-09 |
+| 2 | Rahul | Sharma | Delhi | Delhi | 2026-03-08 |
 
 ---
 
 # 🧠 SQL Query Used
 
 ```
-UPDATE contacts
-SET first_name=?, last_name=?, address=?, city=?, state=?, zip=?, phone=?, email=?
-WHERE id=?;
+SELECT * FROM contacts
+WHERE date_added BETWEEN ? AND ?;
 ```
 
-PreparedStatement is used to safely bind parameters to the query.
+PreparedStatement is used to safely bind the start and end dates.
 
 ---
 
 # 🌐 API Endpoint
 
-### Update Contact in Database
+### Retrieve Contacts by Date Range
 
 ```
-PUT /contacts/db/update
+GET /contacts/db/date-range
 ```
 
-This endpoint updates the details of a contact using the provided ID.
+Parameters:
+
+| Parameter | Description |
+|----------|-------------|
+| startDate | Start date for filtering |
+| endDate | End date for filtering |
 
 ---
 
-# 📥 Example Request Body
+# 📥 Example Request
 
 ```
-{
- "id":1,
- "firstName":"Bhumi",
- "lastName":"Shrivas",
- "address":"MP Nagar",
- "city":"Bhopal",
- "state":"MP",
- "zip":"462001",
- "phoneNumber":"9999999999",
- "email":"bhumi@email.com"
-}
+GET /contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10
+```
+
+---
+
+# 📤 Example Response
+
+```
+[
+ {
+  "id":1,
+  "firstName":"Bhumi",
+  "lastName":"Shrivas",
+  "city":"Bhopal",
+  "state":"MP"
+ }
+]
 ```
 
 ---
@@ -124,38 +130,18 @@ This endpoint updates the details of a contact using the provided ID.
 # 🧪 Testing Using CURL
 
 ```
-curl -X PUT http://localhost:8080/contacts/db/update \
--H "Content-Type: application/json" \
--d '{"id":1,"firstName":"Bhumi","lastName":"Shrivas","city":"Bhopal"}'
+curl "http://localhost:8080/contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10"
 ```
-
-Response:
-
-```
-Contact updated successfully
-```
-
----
-
-# 🔍 Verify Update
-
-Run in MySQL:
-
-```
-SELECT * FROM contacts;
-```
-
-The contact information should reflect the updated values.
 
 ---
 
 # 🌿 Git Branch
 
 ```
-feature/UC17-update-contact-and-sync-with-db
+feature/UC18-retrieve-contacts-by-date-range
 ```
 
-After review, this branch will be merged into:
+After review this branch will be merged into:
 
 ```
 dev
@@ -165,12 +151,19 @@ dev
 
 # 📌 Next Implementation
 
-### UC18 – Retrieve Contacts by Date Range
+### UC19 – Count Contacts by City or State (Database)
 
 Next features:
 
-- Retrieve contacts added between two dates
-- Use **SQL date filtering**
-- Implement **date-based search API**
+- Count contacts grouped by city
+- Count contacts grouped by state
+- Use SQL aggregation with **GROUP BY**
+
+Example result:
+
+```
+Bhopal → 3 contacts
+Delhi → 2 contacts
+```
 
 ---
