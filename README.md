@@ -6,13 +6,14 @@ This project follows a **Git Feature Branch Workflow**, where each **Use Case (U
 
 ---
 
-# 🚀 UC23 – Add Multiple Entries to JSON Server
+# 🚀 UC24 – Update Entry in JSON Server
 
-This branch introduces functionality to **add multiple contacts to a JSON Server using REST API calls**.
+This branch introduces functionality to **update an existing contact entry stored in JSON Server**.
 
-JSON Server acts as a **mock backend service** that stores contact information in a JSON file and exposes it through REST endpoints.
+JSON Server acts as a **mock REST API backend** that stores data in a JSON file and exposes it through REST endpoints.  
+The Spring Boot application communicates with this server and updates contact data using an **HTTP PUT request**.
 
-The Spring Boot application sends **HTTP POST requests** to JSON Server to insert new contact records.
+This demonstrates how a Spring Boot application can **modify data in an external REST service**.
 
 ---
 
@@ -70,7 +71,14 @@ Example content:
 
 ```
 {
-  "contacts": []
+  "contacts": [
+    {
+      "id": 1,
+      "firstName": "Rahul",
+      "lastName": "Sharma",
+      "city": "Delhi"
+    }
+  ]
 }
 ```
 
@@ -82,7 +90,7 @@ Example content:
 json-server --watch db.json --port 3000
 ```
 
-Server URL:
+Server endpoint:
 
 ```
 http://localhost:3000/contacts
@@ -92,46 +100,46 @@ http://localhost:3000/contacts
 
 # 🧠 Implementation
 
-The application sends contact data to JSON Server using **RestTemplate**.
+The Spring Boot application sends an **HTTP PUT request** to update a specific contact in JSON Server.
 
 Example logic:
 
 ```
 RestTemplate restTemplate = new RestTemplate();
-restTemplate.postForObject(url, contact, Contact.class);
+restTemplate.put("http://localhost:3000/contacts/{id}", contact);
 ```
 
-Each contact in the request list is sent to the JSON Server and stored in the JSON database.
+The existing contact entry is replaced with the updated data.
 
 ---
 
 # 🌐 API Endpoint
 
-### Add Multiple Contacts to JSON Server
+### Update Contact in JSON Server
 
 ```
-POST /contacts/jsonserver/add-multiple
+PUT /contacts/jsonserver/update/{id}
 ```
 
-This endpoint sends multiple contacts to the JSON Server.
+This endpoint updates the contact with the specified ID.
 
 ---
 
-# 📥 Example Request Body
+# 📥 Example Request
 
 ```
-[
- {
-  "firstName": "Amit",
-  "lastName": "Patel",
-  "city": "Ahmedabad"
- },
- {
-  "firstName": "Neha",
-  "lastName": "Verma",
-  "city": "Indore"
- }
-]
+PUT /contacts/jsonserver/update/1
+```
+
+Request body:
+
+```
+{
+ "id": 1,
+ "firstName": "Bhumi",
+ "lastName": "Shrivas",
+ "city": "Bhopal"
+}
 ```
 
 ---
@@ -139,7 +147,7 @@ This endpoint sends multiple contacts to the JSON Server.
 # 📤 Example Response
 
 ```
-Contacts added to JSON Server successfully
+Contact updated successfully in JSON Server
 ```
 
 ---
@@ -147,29 +155,29 @@ Contacts added to JSON Server successfully
 # 🧪 Testing Using CURL
 
 ```
-curl -X POST http://localhost:8080/contacts/jsonserver/add-multiple \
+curl -X PUT http://localhost:8080/contacts/jsonserver/update/1 \
 -H "Content-Type: application/json" \
--d '[{"firstName":"Amit","lastName":"Patel","city":"Ahmedabad"},{"firstName":"Neha","lastName":"Verma","city":"Indore"}]'
+-d '{"id":1,"firstName":"Bhumi","lastName":"Shrivas","city":"Bhopal"}'
 ```
 
 ---
 
-# 🔍 Verify in JSON Server
+# 🔍 Verify Update
 
-Open in browser:
+Open the JSON Server endpoint:
 
 ```
 http://localhost:3000/contacts
 ```
 
-You should see the newly added contact entries.
+The contact entry should reflect the updated information.
 
 ---
 
 # 🌿 Git Branch
 
 ```
-feature/UC23-add-multiple-entries-jsonserver
+feature/UC24-update-entry-jsonserver
 ```
 
 After review this branch will be merged into:
@@ -182,8 +190,8 @@ dev
 
 # 📌 Next Implementation
 
-### UC24 – Update Entry in JSON Server
+### UC25 – Delete Entry from JSON Server
 
-Next feature will allow updating contact entries in JSON Server using **HTTP PUT requests**.
+The next feature will allow deleting contacts from JSON Server using **HTTP DELETE requests**.
 
 ---
