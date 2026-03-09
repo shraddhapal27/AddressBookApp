@@ -245,4 +245,18 @@ public class AddressBookDBService {
 
         return "Insert failed";
     }
+    
+    // Add multiple contacts concurrently to database
+    public void addMultipleContacts(List<Contact> contacts) {
+
+        contacts.forEach(contact -> {
+
+            new Thread(() -> {
+                addContact(contact);
+                System.out.println("Contact added by thread: " + Thread.currentThread().getName());
+            }).start();
+
+        });
+
+    }
 }
