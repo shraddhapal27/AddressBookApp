@@ -1,4 +1,3 @@
-
 # 📒 AddressBookApp
 
 A **Spring Boot REST API** application for managing contacts in an Address Book.
@@ -7,14 +6,14 @@ This project follows a **Git Feature Branch Workflow**, where each **Use Case (U
 
 ---
 
-# 🚀 UC5 – Add Multiple Contacts
+# 🚀 UC6 – Multiple Address Books
 
-This branch implements the ability to **add multiple contacts to the Address Book in a single request**.
+This branch introduces support for **multiple Address Books** in the system.
 
-Previously, contacts could only be added **one at a time**.  
-With UC5, the system now supports **bulk insertion of contacts** using a REST API.
+Previously, the application supported only **one list of contacts**.  
+With UC6, the system now allows users to **create and manage multiple address books**, each containing its own contacts.
 
-Contacts are stored in a **local in-memory list** and handled through the **Service Layer**.
+Each Address Book has a **unique name** and stores a **list of contacts**.
 
 ---
 
@@ -43,6 +42,7 @@ AddressBookApp
 │   │
 │   ├── model
 │   │      Contact.java
+│   │      AddressBook.java
 │   │
 │   └── AddressBookAppApplication.java
 │
@@ -66,28 +66,55 @@ Client (CURL / Postman / Browser)
          Service
             │
             ▼
-     Local List Storage
+     Map<String, AddressBook>
 ```
 
-### Responsibilities
+Each **AddressBook** contains its own list of contacts.
 
-**Controller**
-- Handles HTTP requests
-- Maps API endpoints
-- Communicates with service layer
+Example structure:
 
-**Service**
-- Contains business logic
-- Performs CRUD operations on contacts
+```
+AddressBooks
+│
+├── Personal
+│     ├── Contact1
+│     └── Contact2
+│
+├── Work
+│     ├── Contact1
+│     └── Contact2
+```
 
-**Model**
-- Defines the Contact data structure
+---
+
+# 📦 Data Structure Used
+
+A **Map** is used to store address books.
+
+```
+Map<String, AddressBook>
+```
+
+Where:
+
+| Key | Value |
+|----|----|
+| AddressBook Name | AddressBook Object |
+
+Example:
+
+```
+{
+ "Personal": AddressBook,
+ "Work": AddressBook
+}
+```
 
 ---
 
 # 👤 Contact Model
 
-The `Contact` class represents a person in the Address Book.
+The `Contact` class represents a person in an Address Book.
 
 ### Fields
 
@@ -105,89 +132,102 @@ The `Contact` class represents a person in the Address Book.
 
 ---
 
+# 📚 AddressBook Model
+
+The `AddressBook` class represents a collection of contacts.
+
+### Fields
+
+| Field | Description |
+|------|-------------|
+| name | Name of address book |
+| contacts | List of contacts |
+
+---
+
 # 🌐 API Endpoints
 
-### ➕ Add Contact
+### 📚 Create Address Book
 
 ```
-POST /contacts
+POST /addressbooks?name=Personal
 ```
 
-Adds a single contact.
+Creates a new address book.
 
 ---
 
-### 📦 Add Multiple Contacts
+### 📋 Get All Address Books
 
 ```
-POST /contacts/bulk
+GET /addressbooks
 ```
 
-Adds multiple contacts in a single request.
+Returns all address books in the system.
 
 ---
 
-### 📋 Get All Contacts
+### ➕ Add Contact to Address Book
 
 ```
-GET /contacts
+POST /addressbooks/{name}/contacts
 ```
 
-Returns all contacts stored in memory.
+Adds a contact to a specific address book.
+
+Example:
+
+```
+POST /addressbooks/Personal/contacts
+```
 
 ---
 
-### 🔍 Get Contact by ID
+### 👥 Get Contacts from Address Book
 
 ```
-GET /contacts/{id}
+GET /addressbooks/{name}/contacts
 ```
 
-Returns the contact matching the given ID.
+Returns all contacts from the specified address book.
 
----
-
-### ✏️ Update Contact
+Example:
 
 ```
-PUT /contacts/{id}
+GET /addressbooks/Personal/contacts
 ```
-
-Updates contact details.
-
----
-
-### ❌ Delete Contact
-
-```
-DELETE /contacts/{id}
-```
-
-Deletes the contact with the specified ID.
 
 ---
 
 # 🧪 Testing Using CURL
 
-### Add Multiple Contacts
+### Create Address Book
 
 ```
-curl -X POST http://localhost:8080/contacts/bulk -H "Content-Type: application/json" -d "[{\"id\":2,\"firstName\":\"Rahul\",\"lastName\":\"Sharma\",\"address\":\"Delhi\",\"city\":\"Delhi\",\"state\":\"Delhi\",\"zip\":\"110001\",\"phoneNumber\":\"8888888888\",\"email\":\"rahul@email.com\"},{\"id\":3,\"firstName\":\"Priya\",\"lastName\":\"Patel\",\"address\":\"Ahmedabad\",\"city\":\"Ahmedabad\",\"state\":\"Gujarat\",\"zip\":\"380001\",\"phoneNumber\":\"7777777777\",\"email\":\"priya@email.com\"}]"
+curl -X POST "http://localhost:8080/addressbooks?name=Personal"
 ```
 
 ---
 
-### Get All Contacts
+### Add Contact
 
 ```
-curl http://localhost:8080/contacts
+curl -X POST http://localhost:8080/addressbooks/Personal/contacts -H "Content-Type: application/json" -d "{\"id\":1,\"firstName\":\"Bhumi\",\"lastName\":\"Shrivas\",\"city\":\"Bhopal\"}"
+```
+
+---
+
+### Get Contacts
+
+```
+curl http://localhost:8080/addressbooks/Personal/contacts
 ```
 
 ---
 
 # ▶️ How to Run the Project
 
-### 1️⃣ Clone the repository
+### 1️⃣ Clone repository
 
 ```
 git clone https://github.com/<your-username>/AddressBookApp.git
@@ -195,7 +235,7 @@ git clone https://github.com/<your-username>/AddressBookApp.git
 
 ---
 
-### 2️⃣ Navigate to the project
+### 2️⃣ Navigate to project
 
 ```
 cd AddressBookApp
@@ -203,7 +243,7 @@ cd AddressBookApp
 
 ---
 
-### 3️⃣ Run the Spring Boot application
+### 3️⃣ Run application
 
 ```
 mvn spring-boot:run
@@ -222,7 +262,7 @@ from your IDE.
 ### 4️⃣ Access APIs
 
 ```
-http://localhost:8080/contacts
+http://localhost:8080/addressbooks
 ```
 
 ---
@@ -230,10 +270,10 @@ http://localhost:8080/contacts
 # 🌿 Git Branch
 
 ```
-feature/UC5-add-multiple-contacts
+feature/UC6-multiple-addressbooks
 ```
 
-This branch implements **Use Case 5 – Add Multiple Contacts**.
+This branch implements **Use Case 6 – Multiple Address Books**.
 
 After review it will be merged into:
 
@@ -245,12 +285,13 @@ dev
 
 # 📌 Next Implementation
 
-### UC6 – Multiple Address Books
+### UC7 – Prevent Duplicate Contact
 
 Next features:
 
-- 📚 Support multiple address books
-- 🗂 Store address books using a **Map or Dictionary**
-- 👥 Manage contacts per address book
+- 🚫 Prevent duplicate contacts in an address book
+- 🔍 Search contact before insertion
+- 🧩 Implement `equals()` method
+- ⚡ Use **Java Streams**
 
 ---
