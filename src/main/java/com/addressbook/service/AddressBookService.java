@@ -1,6 +1,5 @@
 package com.addressbook.service;
 
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -75,5 +74,13 @@ public class AddressBookService {
         }
 
         return "Contact not found";
+    }
+    
+    // Add Multiple Contacts
+    public List<Contact> addMultipleContacts(List<Contact> contacts) {
+
+        contactList.addAll(contacts);
+
+        return contactList;
     }
 }
