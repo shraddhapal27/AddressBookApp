@@ -7,13 +7,13 @@ This project follows a **Git Feature Branch Workflow**, where each **Use Case (U
 
 ---
 
-# 🚀 UC18 – Retrieve Contacts by Date Range
+# 🚀 UC20 – Add Contact to Database
 
-This branch introduces functionality to **retrieve contacts added within a specific date range from the MySQL database**.
+This branch introduces functionality to **add new contacts directly into the MySQL database**.
 
-The application now supports querying contacts based on the date they were added using **SQL date filtering**.
+Users can now create new contact entries through a REST API, which inserts the data into the database using **JDBC**.
 
-This feature is implemented using **JDBC and SQL `BETWEEN` operator**.
+This feature enables persistent storage of contact information in the database.
 
 ---
 
@@ -51,62 +51,73 @@ AddressBookApp
 
 ---
 
-# 🗄 Database Update
+# 🗄 Database Table
 
-A new column was added to the contacts table to track when a contact was added.
-
-```
-date_added DATE
-```
-
-SQL used:
+Database used:
 
 ```
-ALTER TABLE contacts
-ADD date_added DATE;
+addressbook_db
 ```
 
-Example table structure:
+Table:
 
-| id | first_name | last_name | city | state | date_added |
-|----|-----------|-----------|------|------|-----------|
-| 1 | Bhumi | Shrivas | Bhopal | MP | 2026-03-09 |
-| 2 | Rahul | Sharma | Delhi | Delhi | 2026-03-08 |
+```
+contacts
+```
+
+| Column | Description |
+|------|-------------|
+| id | Contact ID |
+| first_name | First name |
+| last_name | Last name |
+| address | Address |
+| city | City |
+| state | State |
+| zip | Zip code |
+| phone | Phone number |
+| email | Email address |
+| date_added | Date when contact was added |
 
 ---
 
 # 🧠 SQL Query Used
 
 ```
-SELECT * FROM contacts
-WHERE date_added BETWEEN ? AND ?;
+INSERT INTO contacts
+(first_name,last_name,address,city,state,zip,phone,email,date_added)
+VALUES
+('Amit','Patel','Satellite','Ahmedabad','Gujarat','380015','9998887777','amit@email.com',CURDATE());
 ```
 
-PreparedStatement is used to safely bind the start and end dates.
+The query inserts a new contact record into the database with the current date.
 
 ---
 
 # 🌐 API Endpoint
 
-### Retrieve Contacts by Date Range
+### Add Contact to Database
 
 ```
-GET /contacts/db/date-range
+POST /contacts/db/add
 ```
 
-Parameters:
-
-| Parameter | Description |
-|----------|-------------|
-| startDate | Start date for filtering |
-| endDate | End date for filtering |
+This API inserts a new contact into the database.
 
 ---
 
-# 📥 Example Request
+# 📥 Example Request Body
 
 ```
-GET /contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10
+{
+ "firstName":"Amit",
+ "lastName":"Patel",
+ "address":"Satellite",
+ "city":"Ahmedabad",
+ "state":"Gujarat",
+ "zip":"380015",
+ "phoneNumber":"9998887777",
+ "email":"amit@email.com"
+}
 ```
 
 ---
@@ -114,15 +125,7 @@ GET /contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10
 # 📤 Example Response
 
 ```
-[
- {
-  "id":1,
-  "firstName":"Bhumi",
-  "lastName":"Shrivas",
-  "city":"Bhopal",
-  "state":"MP"
- }
-]
+Contact added successfully
 ```
 
 ---
@@ -130,15 +133,35 @@ GET /contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10
 # 🧪 Testing Using CURL
 
 ```
-curl "http://localhost:8080/contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10"
+curl -X POST http://localhost:8080/contacts/db/add \
+-H "Content-Type: application/json" \
+-d '{"firstName":"Amit","lastName":"Patel","address":"Satellite","city":"Ahmedabad","state":"Gujarat","zip":"380015","phoneNumber":"9998887777","email":"amit@email.com"}'
 ```
+
+---
+
+# 🔍 Verify in Database
+
+Run the following query in MySQL:
+
+```
+SELECT * FROM contacts;
+```
+
+Example output:
+
+| id | first_name | city | date_added |
+|----|-----------|------|-----------|
+| 1 | Bhumi | Bhopal | 2026-03-09 |
+| 2 | Rahul | Delhi | 2026-03-09 |
+| 3 | Amit | Ahmedabad | 2026-03-09 |
 
 ---
 
 # 🌿 Git Branch
 
 ```
-feature/UC18-retrieve-contacts-by-date-range
+feature/UC20-add-contact-to-database
 ```
 
 After review this branch will be merged into:
@@ -151,19 +174,13 @@ dev
 
 # 📌 Next Implementation
 
-### UC19 – Count Contacts by City or State (Database)
+### UC21 – Add Multiple Contacts Using Multithreading
 
 Next features:
 
-- Count contacts grouped by city
-- Count contacts grouped by state
-- Use SQL aggregation with **GROUP BY**
-
-Example result:
-
-```
-Bhopal → 3 contacts
-Delhi → 2 contacts
-```
+- Insert multiple contacts simultaneously
+- Use **Java multithreading**
+- Improve performance when adding many contacts
+- Synchronize database operations safely
 
 ---
