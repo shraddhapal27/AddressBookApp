@@ -1,4 +1,3 @@
-
 package com.addressbook.controller;
 
 import java.util.List;
@@ -7,6 +6,8 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import com.addressbook.io.AddressBookCSVService;
+import com.addressbook.io.AddressBookFileService;
 import com.addressbook.model.AddressBook;
 import com.addressbook.model.Contact;
 import com.addressbook.service.AddressBookService;
@@ -97,5 +98,57 @@ public class AddressBookController {
     public List<Contact> sortContactsByName() {
 
         return addressBookService.sortContactsByName();
+    }
+    
+    // Sort Contacts by City across all Address Books
+    @GetMapping("/contacts/sort/city")
+    public List<Contact> sortContactsByCity() {
+
+        return addressBookService.sortContactsByCity();
+    }
+    
+    // Sort Contacts by State across all Address Books
+    @GetMapping("/contacts/sort/state")
+    public List<Contact> sortContactsByState() {
+
+        return addressBookService.sortContactsByState();
+    }
+    
+    // Sort Contacts by Zip across all Address Books
+    @GetMapping("/contacts/sort/zip")
+    public List<Contact> sortContactsByZip() {
+
+        return addressBookService.sortContactsByZip();
+    }
+    
+    @GetMapping("/contacts/write")
+    public String writeContactsToFile() {
+
+        List<Contact> contacts = addressBookService.getAllContacts();
+
+        AddressBookFileService fileService = new AddressBookFileService();
+        fileService.writeContactsToFile(contacts);
+
+        return "Contacts written to file";
+    }
+    
+    // Write Contacts to CSV file
+    @GetMapping("/contacts/csv/write")
+    public String writeContactsToCSV() {
+
+        List<Contact> contacts = addressBookService.getAllContacts();
+
+        AddressBookCSVService csvService = new AddressBookCSVService();
+        csvService.writeContactsToCSV(contacts);
+
+        return "Contacts written to CSV file";
+    }
+    
+    // Read Contacts from CSV file
+    @GetMapping("/contacts/csv/read")
+    public List<Contact> readContactsFromCSV() {
+
+        AddressBookCSVService csvService = new AddressBookCSVService();
+        return csvService.readContactsFromCSV();
     }
 }
