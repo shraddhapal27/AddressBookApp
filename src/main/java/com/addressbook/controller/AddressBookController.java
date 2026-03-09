@@ -1,3 +1,4 @@
+
 package com.addressbook.controller;
 
 import java.util.List;
@@ -89,5 +90,12 @@ public class AddressBookController {
     public Map<String, Long> countContactsByState() {
 
         return addressBookService.countContactsByState();
+    }
+    
+    // Sort Contacts by Name across all Address Books
+    @GetMapping("/contacts/sort/name")
+    public List<Contact> sortContactsByName() {
+
+        return addressBookService.sortContactsByName();
     }
 }
