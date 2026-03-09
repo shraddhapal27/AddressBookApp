@@ -1,3 +1,4 @@
+
 package com.addressbook.controller;
 
 import java.util.List;
@@ -61,5 +62,19 @@ public class AddressBookController {
     public List<Contact> searchByState(@PathVariable String state) {
 
         return addressBookService.searchByState(state);
+    }
+    
+    // View Persons by City
+    @GetMapping("/contacts/view/city")
+    public Map<String, List<Contact>> viewPersonsByCity() {
+
+        return addressBookService.viewPersonsByCity();
+    }
+    
+    // View Persons by State
+    @GetMapping("/contacts/view/state")
+    public Map<String, List<Contact>> viewPersonsByState() {
+
+        return addressBookService.viewPersonsByState();
     }
 }

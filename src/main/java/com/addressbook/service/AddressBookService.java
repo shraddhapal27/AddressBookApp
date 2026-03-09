@@ -1,8 +1,10 @@
 package com.addressbook.service;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 
@@ -49,10 +51,12 @@ public class AddressBookService {
 
         contacts.add(contact);
 
+        cityMap.computeIfAbsent(contact.getCity(), k -> new ArrayList<>()).add(contact);
+        stateMap.computeIfAbsent(contact.getState(), k -> new ArrayList<>()).add(contact);
+
         return "Contact added successfully";
     }
-
-
+    
     // Get Contacts from Address Book
     public List<Contact> getContacts(String addressBookName) {
 
@@ -82,4 +86,26 @@ public class AddressBookService {
                 .filter(contact -> contact.getState().equalsIgnoreCase(state))
                 .toList();
     }
+    
+    // View Persons by City across all Address Books
+    public Map<String, List<Contact>> viewPersonsByCity() {
+
+        return addressBooks.values()
+                .stream()
+                .flatMap(addressBook -> addressBook.getContacts().stream())
+                .collect(Collectors.groupingBy(Contact::getCity));
+    }
+    
+    // View Persons by State across all Address Books
+    public Map<String, List<Contact>> viewPersonsByState() {
+
+        return addressBooks.values()
+                .stream()
+                .flatMap(addressBook -> addressBook.getContacts().stream())
+                .collect(Collectors.groupingBy(Contact::getState));
+    }
+    
+    // Additional Maps for City and State to optimize search and view operations
+    private Map<String, List<Contact>> cityMap = new HashMap<>();
+    private Map<String, List<Contact>> stateMap = new HashMap<>();
 }
