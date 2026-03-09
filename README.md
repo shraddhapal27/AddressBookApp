@@ -3,17 +3,17 @@
 
 A **Spring Boot REST API** application for managing contacts in an Address Book.
 
-This project follows a **Git Feature Branch Workflow**, where each **Use Case (UC)** is implemented in a separate branch and later merged into the `dev` branch.
+The project follows a **Git Feature Branch Workflow**, where each **Use Case (UC)** is implemented in a separate branch and merged into the `dev` branch after completion.
 
 ---
 
-# 🚀 UC18 – Retrieve Contacts by Date Range
+# 🚀 UC19 – Count Contacts by City or State (Database)
 
-This branch introduces functionality to **retrieve contacts added within a specific date range from the MySQL database**.
+This branch introduces functionality to **count the number of contacts grouped by city and state directly from the MySQL database**.
 
-The application now supports querying contacts based on the date they were added using **SQL date filtering**.
+The feature uses **SQL aggregation with the `GROUP BY` clause** to calculate the number of contacts belonging to each city or state.
 
-This feature is implemented using **JDBC and SQL `BETWEEN` operator**.
+Instead of retrieving all contacts and counting them in memory, the counting is performed efficiently inside the database.
 
 ---
 
@@ -51,62 +51,67 @@ AddressBookApp
 
 ---
 
-# 🗄 Database Update
+# 🗄 Database Table
 
-A new column was added to the contacts table to track when a contact was added.
-
-```
-date_added DATE
-```
-
-SQL used:
+Table used:
 
 ```
-ALTER TABLE contacts
-ADD date_added DATE;
+contacts
 ```
 
-Example table structure:
-
-| id | first_name | last_name | city | state | date_added |
-|----|-----------|-----------|------|------|-----------|
-| 1 | Bhumi | Shrivas | Bhopal | MP | 2026-03-09 |
-| 2 | Rahul | Sharma | Delhi | Delhi | 2026-03-08 |
+| Column | Description |
+|------|-------------|
+| id | Contact ID |
+| first_name | First name |
+| last_name | Last name |
+| address | Address |
+| city | City |
+| state | State |
+| zip | Zip code |
+| phone | Phone number |
+| email | Email address |
+| date_added | Date when contact was added |
 
 ---
 
-# 🧠 SQL Query Used
+# 🧠 SQL Queries Used
+
+### Count Contacts by City
 
 ```
-SELECT * FROM contacts
-WHERE date_added BETWEEN ? AND ?;
+SELECT city, COUNT(*) AS count
+FROM contacts
+GROUP BY city;
 ```
-
-PreparedStatement is used to safely bind the start and end dates.
 
 ---
 
-# 🌐 API Endpoint
-
-### Retrieve Contacts by Date Range
+### Count Contacts by State
 
 ```
-GET /contacts/db/date-range
+SELECT state, COUNT(*) AS count
+FROM contacts
+GROUP BY state;
 ```
 
-Parameters:
-
-| Parameter | Description |
-|----------|-------------|
-| startDate | Start date for filtering |
-| endDate | End date for filtering |
+These queries group records by city or state and return the total number of contacts for each group.
 
 ---
 
-# 📥 Example Request
+# 🌐 API Endpoints
+
+### Count Contacts by City
 
 ```
-GET /contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10
+GET /contacts/db/count/city
+```
+
+---
+
+### Count Contacts by State
+
+```
+GET /contacts/db/count/state
 ```
 
 ---
@@ -114,23 +119,30 @@ GET /contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10
 # 📤 Example Response
 
 ```
-[
- {
-  "id":1,
-  "firstName":"Bhumi",
-  "lastName":"Shrivas",
-  "city":"Bhopal",
-  "state":"MP"
- }
-]
+{
+ "Bhopal": 2,
+ "Delhi": 1
+}
 ```
+
+The response represents the number of contacts belonging to each city or state.
 
 ---
 
 # 🧪 Testing Using CURL
 
+### Count Contacts by City
+
 ```
-curl "http://localhost:8080/contacts/db/date-range?startDate=2026-03-01&endDate=2026-03-10"
+curl http://localhost:8080/contacts/db/count/city
+```
+
+---
+
+### Count Contacts by State
+
+```
+curl http://localhost:8080/contacts/db/count/state
 ```
 
 ---
@@ -138,7 +150,7 @@ curl "http://localhost:8080/contacts/db/date-range?startDate=2026-03-01&endDate=
 # 🌿 Git Branch
 
 ```
-feature/UC18-retrieve-contacts-by-date-range
+feature/UC19-count-contacts-by-city-state-db
 ```
 
 After review this branch will be merged into:
@@ -151,19 +163,12 @@ dev
 
 # 📌 Next Implementation
 
-### UC19 – Count Contacts by City or State (Database)
+### UC20 – Add Contact to Database
 
 Next features:
 
-- Count contacts grouped by city
-- Count contacts grouped by state
-- Use SQL aggregation with **GROUP BY**
-
-Example result:
-
-```
-Bhopal → 3 contacts
-Delhi → 2 contacts
-```
+- Insert new contacts into the MySQL database
+- Use **JDBC PreparedStatement**
+- Sync database with application APIs
 
 ---
