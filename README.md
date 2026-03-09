@@ -1,17 +1,20 @@
-
 # 📒 AddressBookApp
 
 A **Spring Boot REST API** application for managing contacts in an Address Book.
 
-This project follows a **Git Feature Branch Workflow**, where every **Use Case (UC)** is implemented in a separate branch and later merged into the `dev` branch.
+This project follows a **Git Feature Branch Workflow**, where each **Use Case (UC)** is implemented in a separate branch and later merged into the `dev` branch.
 
 ---
 
-# 🚀 UC2 – Add Contact Using Service Layer
+# 🚀 UC3 – Edit Contact
 
-This branch implements the ability to **add a new contact to the Address Book using a REST API**.
+This branch implements the ability to **retrieve and update contact details** in the Address Book.
 
-The contacts are stored in a **local in-memory list** and accessed through a **Service Layer**, following the **Controller → Service → Model architecture**.
+The application now supports:
+- 🔍 Retrieving a contact using its **ID**
+- ✏️ Updating an existing contact
+
+The contacts are stored in a **local in-memory list** and accessed through a **Service Layer**.
 
 ---
 
@@ -70,15 +73,15 @@ Client (CURL / Postman / Browser)
 
 **Controller**
 - Handles HTTP requests
-- Calls service methods
-- Returns API responses
+- Maps endpoints to methods
+- Calls service layer
 
 **Service**
 - Contains business logic
-- Manages contact list
+- Retrieves and updates contact data
 
 **Model**
-- Represents Contact data structure
+- Represents the Contact structure
 
 ---
 
@@ -104,23 +107,45 @@ The `Contact` class represents a person in the Address Book.
 
 # 🌐 API Endpoints
 
-### ➕ Add Contact
-
-```
-POST /contacts
-```
-
-Adds a new contact to the address book.
-
----
-
 ### 📋 Get All Contacts
 
 ```
 GET /contacts
 ```
 
-Returns the list of all contacts stored in memory.
+Returns all contacts stored in memory.
+
+---
+
+### 🔍 Get Contact by ID
+
+```
+GET /contacts/{id}
+```
+
+Returns the contact matching the provided ID.
+
+Example:
+
+```
+GET /contacts/1
+```
+
+---
+
+### ✏️ Update Contact
+
+```
+PUT /contacts/{id}
+```
+
+Updates the contact information for the given ID.
+
+Example:
+
+```
+PUT /contacts/1
+```
 
 ---
 
@@ -134,10 +159,18 @@ curl -X POST http://localhost:8080/contacts -H "Content-Type: application/json" 
 
 ---
 
-### Get All Contacts
+### Get Contact by ID
 
 ```
-curl http://localhost:8080/contacts
+curl http://localhost:8080/contacts/1
+```
+
+---
+
+### Update Contact
+
+```
+curl -X PUT http://localhost:8080/contacts/1 -H "Content-Type: application/json" -d "{\"id\":1,\"firstName\":\"Bhumi\",\"lastName\":\"Updated\",\"address\":\"Bhopal\",\"city\":\"Bhopal\",\"state\":\"MP\",\"zip\":\"462001\",\"phoneNumber\":\"9999999999\",\"email\":\"bhumi@email.com\"}"
 ```
 
 ---
@@ -152,7 +185,7 @@ git clone https://github.com/<your-username>/AddressBookApp.git
 
 ---
 
-### 2️⃣ Navigate to project folder
+### 2️⃣ Navigate to the project
 
 ```
 cd AddressBookApp
@@ -176,7 +209,7 @@ from your IDE.
 
 ---
 
-### 4️⃣ Access the API
+### 4️⃣ Access the APIs
 
 ```
 http://localhost:8080/contacts
@@ -187,10 +220,10 @@ http://localhost:8080/contacts
 # 🌿 Git Branch
 
 ```
-feature/UC2-add-contact
+feature/UC3-edit-contact
 ```
 
-This branch implements **Use Case 2 – Add Contact**.
+This branch implements **Use Case 3 – Edit Contact**.
 
 After review it will be merged into:
 
@@ -202,12 +235,11 @@ dev
 
 # 📌 Next Implementation
 
-### UC3 – Edit Contact
+### UC4 – Delete Contact
 
 Next features to be implemented:
 
-- ✏️ Update contact using **PUT API**
-- 🔍 Get contact by **ID**
-- ❌ Delete contact
+- ❌ Delete contact using **DELETE API**
+- Remove contact by **ID**
 
 ---
