@@ -6,13 +6,13 @@ This project follows a **Git Feature Branch Workflow**, where each **Use Case (U
 
 ---
 
-# 🚀 UC10 – Count Contacts by City or State
+# 🚀 UC11 – Sort Contacts by Name
 
-This branch introduces functionality to **count the number of contacts grouped by city or state**.
+This branch introduces functionality to **sort contacts alphabetically by name**.
 
-Instead of listing contacts, this feature returns the **total number of contacts belonging to each city or state**.
+The sorting operation retrieves all contacts across all address books and returns them sorted by **first name**.
 
-The implementation uses **Java Streams API with grouping and counting collectors**.
+The implementation uses **Java Streams API with Comparator sorting**.
 
 ---
 
@@ -56,67 +56,41 @@ AddressBookApp
 
 # 🧠 Implementation Logic
 
-All contacts across all address books are collected using **Java Streams**, then grouped by city or state and counted.
-
-Example logic:
+All contacts across all address books are collected and sorted using Java Streams:
 
 ```
 contacts.stream()
-        .collect(groupingBy(Contact::getCity, counting()))
+        .sorted(Comparator.comparing(Contact::getFirstName))
 ```
+
+This sorts contacts alphabetically by **first name**.
 
 ---
 
-# 🌐 API Endpoints
+# 🌐 API Endpoint
 
-### 📍 Count Contacts by City
+### 🔤 Sort Contacts by Name
 
 ```
-GET /contacts/count/city
+GET /contacts/sort/name
 ```
 
 Example Response
 
 ```
-{
- "Bhopal": 3,
- "Delhi": 2
-}
-```
-
----
-
-### 📍 Count Contacts by State
-
-```
-GET /contacts/count/state
-```
-
-Example Response
-
-```
-{
- "MP": 3,
- "Delhi": 2
-}
+[
+ { "firstName":"Amit" },
+ { "firstName":"Bhumi" },
+ { "firstName":"Rahul" }
+]
 ```
 
 ---
 
 # 🧪 Testing Using CURL
 
-### Count by City
-
 ```
-curl http://localhost:8080/contacts/count/city
-```
-
----
-
-### Count by State
-
-```
-curl http://localhost:8080/contacts/count/state
+curl http://localhost:8080/contacts/sort/name
 ```
 
 ---
@@ -124,7 +98,7 @@ curl http://localhost:8080/contacts/count/state
 # 🌿 Git Branch
 
 ```
-feature/UC10-count-contacts-by-city-or-state
+feature/UC11-sort-contacts-by-name
 ```
 
 After review this branch will be merged into:
@@ -137,12 +111,13 @@ dev
 
 # 📌 Next Implementation
 
-### UC11 – Sort Contacts by Name
+### UC12 – Sort Contacts by City, State, or Zip
 
 Next features:
 
-- Sort contacts alphabetically by **first name**
-- Use **Java Streams sorting**
-- Provide sorted API response
+- Sort contacts by **city**
+- Sort contacts by **state**
+- Sort contacts by **zip code**
+- Implement sorting using **Java Streams Comparator**
 
 ---
